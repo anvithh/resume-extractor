@@ -1,20 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Upload Zip</title>
-    <script>
-        function disableButton() {
-            document.getElementById("uploadButton").disabled = true;
-        }
-    </script>
-</head>
-<body>
+    <style>
+      #loading {
+        display: none;
+        width: 100%;
+        height: 100%;
+        position: fixed;
+        top: 0;
+        left: 0;
+        background-color: rgba(255, 255, 255, 0.5);
+        z-index: 9999;
+      }
+      #loading img {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+    </style>
+  </head>
+  <body>
     <h1>Upload Zip</h1>
-    <form action="/upload" method="post" enctype="multipart/form-data" onsubmit="disableButton()">
-        <input type="file" name="file" accept=".zip">
-        <input type="submit" id="uploadButton" value="Upload">
+    <form
+      id="uploadForm"
+      action="/upload"
+      method="post"
+      enctype="multipart/form-data"
+    >
+      <input type="file" name="file" accept=".zip" />
+      <input type="submit" value="Upload" />
     </form>
-</body>
+    <div id="loading">
+      <img
+        src="https://cdnjs.cloudflare.com/ajax/libs/galleriffic/2.0.1/css/loader.gif"
+        alt="Loading..."
+      />
+    </div>
+    <script>
+      document
+        .getElementById("uploadForm")
+        .addEventListener("submit", function () {
+          document.getElementById("loading").style.display = "block";
+        });
+
+      // Function to hide loading animation and show delayed alert when download link is clicked
+      function hideLoadingWithDelay() {
+        document.getElementById("loading").style.display = "none";
+        setTimeout(function () {
+          alert("File downloaded successfully!");
+        }, 10000); // 7 seconds delay
+      }
+    </script>
+    <!-- This part is added dynamically after file download -->
+    <script>
+      document
+        .getElementById("uploadForm")
+        .addEventListener("submit", function () {
+          // Create a hidden iframe to download the file
+          var iframe = document.createElement("iframe");
+          iframe.style.display = "none";
+          iframe.src = "/upload"; // This should be the route to download the file
+          document.body.appendChild(iframe);
+
+          // Call hideLoadingWithDelay function when the iframe is loaded (i.e., when the download is complete)
+          iframe.onload = function () {
+            hideLoadingWithDelay();
+          };
+        });
+    </script>
+  </body>
 </html>
